@@ -16,11 +16,33 @@ library(tidyr)
 
 ## Reading Data
 
-```{r}
+```{r, message=FALSE}
 afrisenti <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-02-28/afrisenti.csv')
 languages <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-02-28/languages.csv')
 language_scripts <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-02-28/language_scripts.csv')
 language_countries <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-02-28/language_countries.csv')
 country_regions <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-02-28/country_regions.csv')
+```
+
+```{r}
+df <- merge(afrisenti, languages)
+df <- merge(df, language_countries)
+df <- merge(df, country_regions)
+
+afrisenti_lan_freq <- df %>%
+  count(language, label) %>%
+  group_by(label) %>%
+  mutate(freq = round(n/sum(n), 2))
+
+ggplot(afrisenti_lan_freq, aes(x=language, freq, fill=label)) + geom_bar(stat="identity") + coord_flip() + labs(title="Distribution of Tweet Sentiment by Language")
+```
+
+```{r}
+afrisenti_country_freq <- df %>%
+  count(country, label) %>%
+  group_by(label) %>%
+  mutate(freq = round(n/sum(n), 2))
+
+ggplot(afrisenti_country_freq, aes(x=country, freq, fill=label)) + geom_bar(stat="identity") + coord_flip() + labs(title="Distribution of Tweet Sentiment by Country")
 ```
 
